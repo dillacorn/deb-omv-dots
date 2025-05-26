@@ -1,48 +1,124 @@
-I suggest running docker in linux or with WSL2 on windows and/or virtualbox.
-I suggest running your containers on an SSD to reduce strain on your hard drives... primarily for extend the life of the hard drives.
-I suggest doing a backup of your "docker" folder to a docker folder on your hard drives + a backup rsync schedule to a similar sized hard drive. (3 backups)
+# Docker Container Management Guide
 
-rsync commands: (or if you're on openmediavault setup shares of the docker container on your SSD and your HDD and schedule regular backups)
+## 🚀 Recommendations
 
-	command #1: (this command does an rsync copy to a location with monitoring and without deleting files/folders on receiving end)
-		rsync -avh --progress /source/path/ /destination/path/
-	command #2: (this command does an rsync copy to a location with monitoring and deletes files/folders on the receing end)
-		rsync -avh --progress --delete --info=progress2 /source/path/ /destination/path/
+### System Setup
+- **Operating System**: 
+  - ✅ Preferred: Native Linux
+  - Windows: Use WSL2 (Windows Subsystem for Linux)
+  - Alternative: VirtualBox VM
 
-docker-compose_example.yml = modification is required for use
-docker-compose.yml = modification is not required
+### Storage Configuration
+- **Performance**: 
+  - 🚀 Always run containers on SSD
+  - 💾 Reduces HDD wear and improves performance
 
-to start a docker application cmd/TTY to folder location with compose .yml file in location.
+### Backup Strategy
+- **3-2-1 Backup Rule**:
+  1. Primary: Active `docker` folder on SSD
+  2. Secondary: Backup to HDD (same machine)
+  3. Tertiary: Backup to external drive/NAS
 
-run container command = docker compose up -d
-stop container command = docker stop *container_name* (without the *)
+## 🔄 Backup Commands
 
-to see container name for the docker application please read the docker-compose.yml
+### Rsync Options
+# Safe sync (preserves destination files)
+```bash
+rsync -avh --progress /ssd/docker/ /hdd/docker_backup/
+```
 
-good luck... dm me if you have issue.
+# Mirror sync (exact copy with deletion)
+```bash
+rsync -avh --progress --delete --info=progress2 /ssd/docker/ /hdd/docker_backup/
+```
 
+## 🐳 Docker Files
 
+| File                        | Purpose                          |
+|-----------------------------|----------------------------------|
+| `docker-compose_example.yml`| Template (requires editing)      |
+| `docker-compose.yml`        | Production-ready (plug & play)   |
 
-docker commands I know and use:
+## 🛠️ Container Management
 
-docker compose pull                        (pulls the latest update for the container)
+### Basic Commands
+```bash
+# Start container
+```bash
+docker compose up -d
+```
 
-docker rm <container_name>                 (for removing volumes)
+# Stop specific container
+```bash
+docker stop <container_name>
+```
 
-docker compose up -d                       (starts container)
+# Stop container (from compose dir)
+```bash
+docker compose down
+```
 
-docker logs <container_name>               (view containers running logs)
+## Container Monitoring
 
-docker compose down                        (stops container while cd into directory)
+# View running containers
+```bash
+docker ps
+```
 
-docker stop <container_name>               (stopping a specific container from anywhere)
+# View all containers (including stopped)
+```bash
+docker ps -a
+```
 
-docker volume prune                        (removed unused volumes ~ be mindful when doing this.. [you will recieve a warning] unless if all your containers are storing data in there own respective folders then you'll be ok.)
+# View container logs
+```bash
+docker logs <container_name>
+```
 
-docker volume ls                           (lists volumes)
+## 🔧 Maintenance Commands
 
-docker volume inspect <volume_name>        (inspect a volume)
+# Update container images
+```bash
+docker compose pull
+```
 
-docker ps                                  (list running containers)
+## Volume Management
 
-docker ps -a                               (list all containers)
+# List volumes
+```bash
+docker volume ls
+```
+
+# Inspect volume
+```bash
+docker volume inspect <volume_name>
+```
+
+# Remove unused volumes (CAUTION!)
+```bash
+docker volume prune
+```
+
+## Cleanup
+
+# Remove specific container
+```bash
+docker rm <container_name>
+```
+
+❓ Troubleshooting
+
+- Always check container names in `docker-compose.yml`
+
+- For volume operations, verify no containers are using them first
+
+- When in doubt: `docker logs <container_name>`
+
+🍀 Good Luck!
+Remember:
+
+Regular backups prevent headaches
+
+SSD extends hardware life
+
+Proper shutdown prevents corruption
