@@ -26,13 +26,23 @@ good luck... dm me if you have issue.
 docker commands I know and use:
 
 docker compose pull                        (pulls the latest update for the container)
+
 docker rm <container_name>                 (for removing volumes)
+
 docker compose up -d                       (starts container)
+
 docker logs <container_name>               (view containers running logs)
+
 docker compose down                        (stops container while cd into directory)
+
 docker stop <container_name>               (stopping a specific container from anywhere)
+
 docker volume prune                        (removed unused volumes ~ be mindful when doing this.. [you will recieve a warning] unless if all your containers are storing data in there own respective folders then you'll be ok.)
+
 docker volume ls                           (lists volumes)
+
 docker volume inspect <volume_name>        (inspect a volume)
+
 docker ps                                  (list running containers)
+
 docker ps -a                               (list all containers)
