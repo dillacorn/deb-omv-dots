@@ -24,6 +24,7 @@ sudo nano /etc/smartd.conf
 ```
 
 ### 2. Replace file contents with: (just an example)
+```text
 # LOCKED CONFIG - OMV cannot overwrite
 DEFAULT -a -o on -S on -T permissive -W 4,40,65 -n never -I 194
 
@@ -43,6 +44,7 @@ DEFAULT -a -o on -S on -T permissive -W 4,40,65 -n never -I 194
 /dev/disk/by-id/ata-INTEL_SSDSC2BP240G4_ZZZZZZZZ \
   -s (S/../05/./07) \
   -m your@email.com -M exec /usr/share/smartmontools/smartd-runner
+```
 
 ### 3. Make the config immutable:
 ```bash
