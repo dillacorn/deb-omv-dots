@@ -1,0 +1,15 @@
+services:
+  owncast:
+    image: ich777/owncast:latest
+    container_name: owncast
+    restart: unless-stopped
+    ports:
+      - "1930:8080"   # Web UI
+      - "1935:1935"   # RTMP ingest
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
+    volumes:
+      - ./data:/owncast/data   # Persistent data storage
+      - ./ffmpeg:/usr/local/bin/ffmpeg
+    runtime: nvidia

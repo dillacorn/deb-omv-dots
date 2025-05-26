@@ -1,0 +1,40 @@
+services:
+  web:
+    image: ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    ports:
+      - 5010:3000                            # Change 5010 to desired port
+    environment:
+      MEILI_ADDR: http://meilisearch:7700
+      BROWSER_WEB_URL: http://chrome:9222
+      DATA_DIR: /data # DON'T CHANGE THIS
+      MEILI_MASTER_KEY: "____"               # Generate key (see below)
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: "____"                # Generate key (see below)
+
+  chrome:
+    image: gcr.io/zenika-hub/alpine-chrome:123
+    restart: unless-stopped
+    command:
+      - --no-sandbox
+      - --disable-gpu
+      - --disable-dev-shm-usage
+      - --remote-debugging-address=0.0.0.0
+      - --remote-debugging-port=9222
+      - --hide-scrollbars
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.11.1
+    restart: unless-stopped
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meilisearch:/meili_data
+
+volumes:
+  meilisearch:
+  data:
+
+# generate keys command = openssl read -base64 36

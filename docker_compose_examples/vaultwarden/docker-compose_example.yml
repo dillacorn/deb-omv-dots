@@ -1,0 +1,17 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - SIGNUPS_ALLOWED=true                                         # Change to "false" after sign up
+#     - WEB_VAULT_ENABLED=true                                      # web-vault (optional)
+#     - WEB_VAULT_FOLDER=web-vault/                                 # web-vault folder
+    volumes:
+      - ./vw-data:/data
+#      - ./bw_web_builds/container_builds/web-vault:/web-vault:ro    # web-vault (optional) ~ (":ro" means read-only)
+    ports:
+      - 8900:80                                                      # Change to your prefered port
+      
+# to setup web_vault: https://github.com/dani-garcia/vaultwarden/wiki/Building-binary#install-the-web-vault
+# once completed remove # for "web-builds" line and relaunch container.

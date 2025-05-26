@@ -1,0 +1,26 @@
+services:
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    command: serve
+    volumes:
+      - "./data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      - "TZ=America/New_York"  # Replace with your timezone
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 */6 * * *"  # Check for updates every 6 hours
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+      - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
+      - "DIUN_NOTIF_MAIL_HOST=mail.gmx.com" # My mail send provider (free)
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_USERNAME=dillacorn______@gmx.com" # input your gmx email
+      - "DIUN_NOTIF_MAIL_PASSWORD=________" # input your gmx password
+      - "DIUN_NOTIF_MAIL_FROM=dillacorn______@gmx.com" # input your gmx email
+      - "DIUN_NOTIF_MAIL_TO=________@proton.me" # input your receive email
+    labels:
+      - "diun.enable=true"
+    restart: always

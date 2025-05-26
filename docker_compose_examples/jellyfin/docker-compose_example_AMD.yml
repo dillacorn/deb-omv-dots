@@ -1,0 +1,29 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - GUID=1000
+      - TZ=America/New_York                      # enter your timezone
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./config:/config
+      - /srv/dev-disk-by-uuid-__________/Videos:/data/Videos
+      - /srv/dev-disk-by-uuid-__________/Shows:/data/Shows
+      - /srv/dev-disk-by-uuid-__________/Music:/data/Music
+      - /srv/dev-disk-by-uuid-__________/Movies:/data/Movies
+      - /srv/dev-disk-by-uuid-__________/Photos:/data/Pictures
+    ports:
+      - "8096:8096"
+      - "8920:8920"
+    restart: unless-stopped
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128  # enter gpu
+
+
+# gpu documentation: https://jellyfin.org/docs/general/administration/hardware-acceleration/amd/#configure-with-linux-virtualization
+
+# obtain gpu device name = individual commands below
+# getent group render | cut -d: -f3
+# getent group video | cut -d: -f3

@@ -1,0 +1,35 @@
+volumes:
+  mariadb_data:
+
+services:
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    hostname: jellyseerr
+    restart: unless-stopped
+    depends_on:
+      - mariadb_jellyseerr
+    environment:
+      - TZ=America/New_York
+      - DB_TYPE=mysql
+      - DB_HOST=mariadb_jellyseerr
+      - DB_NAME=jellyseerr
+      - DB_USER=________    # input username
+      - DB_PASS=________    # input password
+    volumes:
+      - ./jellyseerr/config:/app/config
+    ports:
+      - 5055:5055
+
+  mariadb_jellyseerr:
+    image: mariadb:latest
+    container_name: mariadb_jellyseerr
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=_______      # enter password
+      - MYSQL_DATABASE=jellyseerr
+      - MYSQL_USER=________              # enter username
+      - MYSQL_PASSWORD=_________         # enter password
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+    command: --innodb-buffer-pool-size=512M --max-connections=200

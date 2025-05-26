@@ -1,0 +1,10 @@
+services:
+  owncast:
+    image: owncast/owncast:latest
+    container_name: owncast
+    restart: unless-stopped
+    ports:
+      - "1930:8080"   # Web UI
+      - "1935:1935"   # RTMP ingest
+    volumes:
+      - ./data:/app/data   # Persistent data storage

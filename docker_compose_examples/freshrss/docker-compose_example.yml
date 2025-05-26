@@ -1,0 +1,42 @@
+volumes:
+  data:
+  extensions:
+
+services:
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    hostname: freshrss
+    restart: unless-stopped
+    depends_on:
+      - mariadb_freshrss
+    environment:
+      TZ: America/New_York              # enter your timezone
+      DB_TYPE: "mysql"
+      DB_HOST: "mariadb_freshrss"
+      DB_USER: "________"               # enter username
+      DB_PASSWORD: "________"           # enter password
+      DB_NAME: "freshrss"
+      CRON_MIN: "25,55"  # update twice an hour 25 min in and 55 min in.
+    ports:
+      - "5015:80"
+    volumes:
+      - ./data:/var/www/FreshRSS/data
+      - ./extensions:/var/www/FreshRSS/extensions
+    logging:
+      options:
+        max-size: 10m
+
+  mariadb_freshrss:
+    image: mariadb:latest
+    container_name: mariadb_freshrss
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "_______"    # enter password
+      MYSQL_DATABASE: "freshrss"
+      MYSQL_USER: "________"            # enter username
+      MYSQL_PASSWORD: "_________"       # enter password
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    command: --innodb-buffer-pool-size=512M --max-connections=200
+

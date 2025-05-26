@@ -1,0 +1,33 @@
+services:
+  sqldb:
+    image: mysql:8.3
+    container_name: kimai_mysql
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=<your_database_name> # insert database name without "<>"
+      - MYSQL_USER=<your_username> # insert username without "<>"
+      - MYSQL_PASSWORD=<your_password> # insert password without "<>"
+      - MYSQL_ROOT_PASSWORD=your_root_password # insert a root password
+    command: --default-storage-engine innodb
+    restart: unless-stopped
+    healthcheck:
+      test: mysqladmin -p$$your_password ping -h localhost # insert password
+      interval: 20s
+      start_period: 10s
+      timeout: 10s    
+      retries: 3
+
+  kimai:
+    image: kimai/kimai2:apache
+    container_name: kimai
+    volumes:
+      - ./kimai/data:/opt/kimai/var/data
+      - ./kimai/plugins:/opt/kimai/var/plugins
+    ports:
+      - 9800:8001
+    environment:
+      - ADMINMAIL= #insert email
+      - ADMINPASS= #insert password
+      - "DATABASE_URL=mysql://<your_username>:<your_password>@sqldb/<your_database_name>?charset=utf8mb4&serverVersion=8.3.0"
+    restart: unless-stopped
