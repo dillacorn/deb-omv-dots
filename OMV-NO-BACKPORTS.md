@@ -5,7 +5,7 @@ sudo nano /etc/apt/preferences.d/no-backports
 
 # paste the following contents
 ```bash
-Package: *
+Package: linux-image-* linux-headers-*
 Pin: release a=bookworm-backports
-Pin-Priority: 100
+Pin-Priority: -1
 ```
