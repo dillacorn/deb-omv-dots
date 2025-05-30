@@ -1,12 +1,39 @@
-# make nvidia driver executable
+# NVIDIA Driver Installation Guide
 
-# command:
-      chmod +x NVIDIA-Linux-x86_64-5xx.1xx.0x.run
+## Make the NVIDIA driver executable
 
-# you do not need vulkan or 32bit.. you will recieve errors that's fine
-# before running installer keep note "you do not need to configure an X server"
+Run the following command to make the installer executable:
 
-# run nvidia driver
+```bash
+chmod +x NVIDIA-Linux-x86_64-5xx.1xx.0x.run
+```
 
-# command:
-      sudo ./NVIDIA-Linux-x86_64-5xx.1xx.0x.run
+## Important Notes Before Installation
+
+You do **not** need to install:
+
+- Vulkan components  
+- 32-bit libraries  
+
+You may see errors about these components — this is expected and can be ignored.
+
+When running the installer:
+
+- Select **"No"** when asked:  
+  *"Would you like to configure an X server?"*
+
+## Run the NVIDIA driver installer
+
+Execute the installer with root privileges:
+
+```bash
+sudo ./NVIDIA-Linux-x86_64-5xx.1xx.0x.run
+```
+
+## Troubleshooting
+
+If you encounter issues:
+
+- Make sure you have exited any graphical session  
+- Verify you have the correct driver version for your GPU  
+- Check that you have the necessary kernel headers installed
