@@ -7,7 +7,7 @@ export DOCKER_HOST=unix:///var/run/docker.sock
 
 # Configuration
 readonly SNAPRAID_CONF_GLOB="/etc/snapraid/omv-snapraid-*.conf"
-readonly PIRACY_COMPOSE="/docker/piracy/docker-compose.yml"
+readonly PRIVACY_COMPOSE="/docker/privacy/docker-compose.yml"
 readonly MAX_WAIT_TIME=3600
 readonly LOG_FILE="/var/log/snapraid_maintenance.log"
 
@@ -18,12 +18,14 @@ RUNNING_CONTAINERS=()
 exec > >(tee -a "$LOG_FILE") 2>&1
 echo "=== SnapRAID Maintenance Started at $(date) ==="
 
+# Function to handle errors
 error_exit() {
     echo "ERROR: $1" >&2
     echo "=== SnapRAID Maintenance FAILED at $(date) ==="
     exit 1
 }
 
+# Verify Docker is avaliable
 check_docker() {
     if ! command -v docker >/dev/null; then
         error_exit "Docker command not found"
@@ -42,6 +44,7 @@ check_docker() {
     fi
 }
 
+# Step 1: Stop running containers safely and record them
 stop_containers() {
     echo "Checking running containers..."
     check_docker
@@ -78,6 +81,7 @@ stop_containers() {
     fi
 }
 
+# Step 2: Verify mounts
 check_mounts() {
     echo "Checking mounts..."
     local mounts_ok=true
@@ -95,6 +99,7 @@ check_mounts() {
     echo "All mounts verified"
 }
 
+# Step 3: Run SnapRAID diffs
 run_snapraid_diffs() {
     local conf_found=false
 
@@ -114,6 +119,7 @@ run_snapraid_diffs() {
     fi
 }
 
+# Step 4: Wait for SnapRAID completion
 wait_for_snapraid() {
     echo "Waiting for SnapRAID to complete..."
 
@@ -131,14 +137,15 @@ wait_for_snapraid() {
     done
 }
 
+# Step 5: Start containers
 start_containers() {
-    if [[ -f "${PIRACY_COMPOSE}" ]]; then
-        echo "Starting piracy stack..."
-        if ! docker compose -f "${PIRACY_COMPOSE}" up -d; then
-            error_exit "Failed to start piracy stack"
+    if [[ -f "${PRIVACY_COMPOSE}" ]]; then
+        echo "Starting privacy stack..."
+        if ! docker compose -f "${PRIVACY_COMPOSE}" up -d; then
+            error_exit "Failed to start privacy stack"
         fi
     else
-        echo "Warning: Piracy compose file not found at ${PIRACY_COMPOSE}"
+        echo "Warning: Privacy compose file not found at ${PRIVACY_COMPOSE}"
     fi
 
     if [[ ${#RUNNING_CONTAINERS[@]} -gt 0 ]]; then
