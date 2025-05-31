@@ -89,6 +89,7 @@ stop_containers() {
 
     check_docker
 
+    # Get running containers and compose stacks
     mapfile -t RUNNING_CONTAINERS < <(docker ps --format '{{.ID}}' --filter status=running)
     mapfile -t RUNNING_COMPOSE_STACKS < <(docker ps --format '{{.Label "com.docker.compose.project"}}' | sort -u | grep -v '^$')
 
@@ -111,13 +112,20 @@ stop_containers() {
         done
     fi
 
-    # Stop individual containers
-    echo "Stopping remaining containers..."
-    if ! timeout 120 docker stop "${RUNNING_CONTAINERS[@]}"; then
-        echo "WARNING: Graceful stop failed - attempting force stop"
-        if ! timeout 60 docker stop --time=30 "${RUNNING_CONTAINERS[@]}"; then
-            error_exit "Failed to stop containers after multiple attempts"
+    # Get remaining running containers (after compose stacks were stopped)
+    mapfile -t REMAINING_CONTAINERS < <(docker ps --format '{{.ID}}' --filter status=running)
+
+    # Stop individual containers (only those still running)
+    if [[ ${#REMAINING_CONTAINERS[@]} -gt 0 ]]; then
+        echo "Stopping remaining containers: ${REMAINING_CONTAINERS[*]}"
+        if ! timeout 120 docker stop "${REMAINING_CONTAINERS[@]}"; then
+            echo "WARNING: Graceful stop failed - attempting force stop"
+            if ! timeout 60 docker stop --time=30 "${REMAINING_CONTAINERS[@]}"; then
+                error_exit "Failed to stop containers after multiple attempts"
+            fi
         fi
+    else
+        echo "No remaining containers to stop"
     fi
 
     # Verify containers stopped
