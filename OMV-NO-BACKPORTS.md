@@ -7,7 +7,7 @@ To avoid potential issues, prevent OpenMediaVault from installing kernel package
 Open the preferences file in a text editor:
 
 ```bash
-sudo nano /etc/apt/preferences.d/no-backports
+sudo nano /etc/apt/preferences.d/no-kernal-backports
 ```
 
 ## Step 2: Add the following content
@@ -15,8 +15,16 @@ sudo nano /etc/apt/preferences.d/no-backports
 Paste the following lines into the file:
 
 ```bash
-Package: linux-image-* linux-headers-*
-Pin: release a=bookworm-backports
+Package: linux-image-*
+Pin: release a=stable-backports
+Pin-Priority: -1
+
+Package: linux-headers-*
+Pin: release a=stable-backports
+Pin-Priority: -1
+
+Package: linux-base
+Pin: release a=stable-backports
 Pin-Priority: -1
 ```
 
