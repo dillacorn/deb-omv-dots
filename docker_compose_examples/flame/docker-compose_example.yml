@@ -1,6 +1,6 @@
 services:
   flame:
-    image: pawelmalak/flame:latest
+    image: ghcr.io/fdarveau/flame:latest
     container_name: flame
     volumes:
       - ./flame/:/app/data
