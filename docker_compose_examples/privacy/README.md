@@ -47,7 +47,7 @@ docker compose up -d
 
 ---
 
-## 🌍 6. Access Web Interfaces
+## 🌍 5. Access Web Interfaces
 
 - 📦 **Transmission**  
   Visit: `http://localhost:9091`
@@ -59,7 +59,7 @@ docker compose up -d
 
 ---
 
-## 🧭 5. Configure Transmission Application
+## 🧭 6. Configure Transmission Application
 
 After launching, adjust the Transmission settings by referring to this visual guide:
 
