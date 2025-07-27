@@ -58,16 +58,10 @@ After launching, adjust the Transmission settings by referring to this visual gu
 ## 🌍 6. Access Web Interfaces
 
 - 📦 **Transmission**  
-  Visit:  
-  ```http
-  http://localhost:9091
-  ```
+  Visit: `http://localhost:9091`
 
 - 🔐 **Mullvad Browser (via noVNC)**  
-  Visit:  
-  ```https
-  https://localhost:6901
-  ```
+  Visit: `https://localhost:6901`
 
 > Replace `localhost` with your server's IP if accessing remotely.
 
