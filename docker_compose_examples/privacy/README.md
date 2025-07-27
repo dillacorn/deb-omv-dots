@@ -47,14 +47,6 @@ docker compose up -d
 
 ---
 
-## 🧭 5. Configure Transmission Application
-
-After launching, adjust the Transmission settings by referring to this visual guide:
-
-📸 [Transmission Settings Guide](https://github.com/dillacorn/deb-omv-dots/tree/main/docker_compose_examples/privacy/transmission_settings)
-
----
-
 ## 🌍 6. Access Web Interfaces
 
 - 📦 **Transmission**  
@@ -64,5 +56,13 @@ After launching, adjust the Transmission settings by referring to this visual gu
   Visit: `https://localhost:6901`
 
 > Replace `localhost` with your server's IP if accessing remotely.
+
+---
+
+## 🧭 5. Configure Transmission Application
+
+After launching, adjust the Transmission settings by referring to this visual guide:
+
+📸 [Transmission Settings Guide](https://github.com/dillacorn/deb-omv-dots/tree/main/docker_compose_examples/privacy/transmission_settings)
 
 ---
