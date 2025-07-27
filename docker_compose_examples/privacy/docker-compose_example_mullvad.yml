@@ -69,7 +69,7 @@ services:
       - ./mullvad-browser/config:/config
 #    ports: # (handled by gluetun)   #   DO NOT UNCOMMENT THIS PORT!
 #     - 6900:3000/tcp http port
-#	    - 6901:3001/tcp https port
+#     - 6901:3001/tcp https port
     shm_size: "1gb"
     restart: unless-stopped
     depends_on:
