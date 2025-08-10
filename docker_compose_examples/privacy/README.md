@@ -4,7 +4,7 @@ This guide walks you through setting up a privacy-focused Docker Compose stack u
 
 ---
 
-## 🌐 0. Configure AirVPN Account Settings
+## 🌐 1. Configure AirVPN Account Settings
 
 Before starting, follow this visual guide to properly configure your AirVPN settings:
 
@@ -12,23 +12,7 @@ Before starting, follow this visual guide to properly configure your AirVPN sett
 
 ---
 
-## 📁 1. Copy NGINX Directory
-
-Copy the `nginx` directory into your `privacy` folder:
-
-🔗 [nginx directory](https://github.com/dillacorn/deb-omv-dots/tree/main/docker_compose_examples/privacy/nginx)
-
----
-
-## 🔐 2. Generate Certificates for Mullvad Browser
-
-Follow these instructions to create self-signed certificates for secure browser use:
-
-📄 [Certificate Guide](https://github.com/dillacorn/deb-omv-dots/blob/main/docker_compose_examples/privacy/selkies-certs/RUN_COMMANDS.md)
-
----
-
-## ⚙️ 3. Configure `docker-compose.yml`
+## ⚙️ 2. Configure `docker-compose.yml`
 
 Edit your `docker-compose.yml` file based on the AirVPN example (recommended for privacy):
 
@@ -36,18 +20,22 @@ Edit your `docker-compose.yml` file based on the AirVPN example (recommended for
 
 ---
 
-## 🚀 4. Launch the Docker Stack
+## 🚀 3. Launch the Docker Stack
 
 Use the following commands in your terminal to start the stack:
 
+Pull Updates for docker apps
 ```bash
-docker compose pull
-docker compose up -d
+sudo docker compose pull
+```
+Launch docker stack
+```bash
+sudo docker compose up -d
 ```
 
 ---
 
-## 🌍 5. Access Web Interfaces
+## 🌍 4. Access Web Interfaces
 
 - 📦 **Transmission**  
   Visit: `http://localhost:9091`
@@ -59,7 +47,7 @@ docker compose up -d
 
 ---
 
-## 🧭 6. Configure Transmission Application
+## 🧭 5. Configure Transmission Application
 
 After launching, adjust the Transmission settings by referring to this visual guide:
 
