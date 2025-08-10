@@ -15,6 +15,6 @@ services:
     volumes:
       - ./config:/config
     ports:
-      - 8123:8080
-      - 8124:8081
+      - 8123:8181 # HTTPS for Calibre Manager
+      - 8124:8081 # For Calibre Reader Server (setup within Calibre app required)
     restart: unless-stopped
