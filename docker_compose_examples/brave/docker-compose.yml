@@ -9,6 +9,7 @@ services:
     environment:
       - PUID=1000 # user id
       - PGID=1000 # group id
+      - TZ=Etc/UTC
       - CUSTOM_USER=   # Username
       - PASSWORD=   # Password
     volumes:
