@@ -55,11 +55,6 @@ services:
     volumes:
       - ./open-webui:/app/backend/data
 
-    ports:
-      - "7005:8080"
-    volumes:
-      - ./open-webui:/app/backend/data
-
   nginx:
     image: nginx:alpine
     container_name: nginx
