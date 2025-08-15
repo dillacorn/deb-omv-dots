@@ -20,13 +20,11 @@ services:
               count: all
               capabilities: [gpu]
 
-  # Headless Chromium exposed over WebSocket for Open WebUI
   playwright:
     image: mcr.microsoft.com/playwright:latest
     container_name: playwright
     restart: unless-stopped
     shm_size: "1gb"
-    # Launch a remote Playwright browser server on ws://0.0.0.0:3000
     command: >
       bash -lc "
         npx --yes playwright@latest install --with-deps chromium &&
@@ -36,13 +34,8 @@ services:
           --port=3000
           --headless=new
       "
-    ports:
-      - "3000:3000"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ > /dev/null || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+    expose:
+      - "3000"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:latest
@@ -52,41 +45,34 @@ services:
       - ollama
       - playwright
     environment:
-      # Core connectivity
       - OLLAMA_BASE_URL=http://ollama:11434
-      - WEBUI_URL=http://localhost:7005
-
-      # Enable built-in Web Search + set engine
       - ENABLE_WEB_SEARCH=True
       - WEB_SEARCH_ENGINE=duckduckgo
-      - WEB_SEARCH_RESULT_COUNT=4
-      - WEB_SEARCH_CONCURRENT_REQUESTS=3
-      # For Brave/Kagi/etc. add the matching API key var from docs and switch WEB_SEARCH_ENGINE
-      # - BRAVE_SEARCH_API_KEY=${BRAVE_SEARCH_API_KEY}
-      # - KAGI_SEARCH_API_KEY=${KAGI_SEARCH_API_KEY}
-
-      # Use Playwright as the page loader (JS-rendered pages, login flows, etc.)
       - WEB_LOADER_ENGINE=playwright
       - PLAYWRIGHT_WS_URL=ws://playwright:3000
-
-      # Respect proxy if needed for fetches
-      # - http_proxy=http://proxy:3128
-      # - https_proxy=http://proxy:3128
-      # - no_proxy=localhost,127.0.0.1,.local
+    expose:
+      - "8080"
+    volumes:
+      - ./open-webui:/app/backend/data
 
     ports:
       - "7005:8080"
     volumes:
       - ./open-webui:/app/backend/data
 
-# Usage:
-#   docker compose up -d
-#   In Open WebUI Admin → Settings:
-#     • Web Search: enabled, engine = DuckDuckGo (or your API engine)
-#     • Web Loader: Playwright (remote), ws URL = ws://playwright:3000
-#
-# Notes:
-#   • WEB_LOADER_ENGINE=playwright enables Playwright-based fetching; PLAYWRIGHT_WS_URL points to the remote browser server.
-#   • If you prefer “no extra service”: drop the playwright service and set only `WEB_LOADER_ENGINE=playwright`.
-#     Open WebUI will auto-install Playwright chromium inside its own container at startup.
-#   • Set WEBUI_URL to the URL you actually use to access Open WebUI (needed by some integrations).
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - open-webui
+    ports:
+      - "7005:7005" # Change to port of choice (both)
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp

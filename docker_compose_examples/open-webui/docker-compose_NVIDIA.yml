@@ -28,6 +28,23 @@ services:
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
     ports:
-      - "7005:8080"
+      - "8080"
     volumes:
       - ./open-webui:/app/backend/data
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - open-webui
+    ports:
+      - "7005:7005" # Change to port of choice (both)
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
