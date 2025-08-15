@@ -10,7 +10,7 @@ services:
       - ./var/cache/ntfy:/var/cache/ntfy
       - ./etc/ntfy:/etc/ntfy
     expose:
-      - "80"
+      - "443"
     restart: unless-stopped
 
   nginx:
