@@ -17,7 +17,7 @@ services:
     
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-vaultwarden
     restart: unless-stopped
     depends_on:
       - vaultwarden

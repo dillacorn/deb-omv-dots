@@ -14,7 +14,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-flame
     restart: unless-stopped
     depends_on:
       - flame

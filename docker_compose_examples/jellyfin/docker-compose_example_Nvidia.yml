@@ -14,9 +14,8 @@ services:
       - /srv/dev-disk-by-uuid-__________/Music:/data/Music
       - /srv/dev-disk-by-uuid-__________/Movies:/data/Movies
       - /srv/dev-disk-by-uuid-__________/Photos:/data/Pictures
-    ports:
-      - "8096:8096"
-      - "8920:8920"
+    expose:
+      - "8096"
     restart: unless-stopped
     deploy:
       resources:
@@ -25,5 +24,22 @@ services:
           - driver: nvidia
             count: 1
             capabilities: [gpu]
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-jellyfin
+    restart: unless-stopped
+    depends_on:
+      - jellyfin
+    ports:
+      - "8096:8096" # Change to port of choice (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
 
 # gpu documentation: https://jellyfin.org/docs/general/administration/hardware-acceleration/nvidia

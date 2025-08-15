@@ -15,7 +15,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-ntfy
     restart: unless-stopped
     depends_on:
       - ntfy

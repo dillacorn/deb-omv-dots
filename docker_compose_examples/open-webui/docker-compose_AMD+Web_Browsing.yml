@@ -51,7 +51,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-open-webui
     restart: unless-stopped
     depends_on:
       - open-webui
