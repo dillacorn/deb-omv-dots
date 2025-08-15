@@ -9,22 +9,28 @@ services:
       - SIGNUPS_ALLOWED=true                                         # Change to "false" after sign up
 #     - WEB_VAULT_ENABLED=true                                      # web-vault (optional)
 #     - WEB_VAULT_FOLDER=web-vault/                                 # web-vault folder
+    expose:
+      - "80"
     volumes:
       - ./vw-data:/data
 #      - ./bw_web_builds/container_builds/web-vault:/web-vault:ro    # web-vault (optional) ~ (":ro" means read-only)
     
   nginx:
     image: nginx:alpine
-    container_name: nginx-vaultwarden
+    container_name: nginx
+    restart: unless-stopped
     depends_on:
       - vaultwarden
-    restart: unless-stopped
     ports:
-      - 8901:443                                                      # Change to your prefered port
+      - "8901:8901" # Change to port of choice (both)
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certs/cert.pem:/etc/ssl/private/fullchain.pem:ro
-      - ./certs/key.pem:/etc/ssl/private/privkey.pem:ro
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
       
 # to setup web_vault: https://github.com/dani-garcia/vaultwarden/wiki/Building-binary#install-the-web-vault
 # once completed remove # for "web-builds" line and relaunch container.

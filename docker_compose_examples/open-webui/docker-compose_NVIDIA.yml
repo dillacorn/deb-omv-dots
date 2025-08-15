@@ -41,7 +41,7 @@ services:
     ports:
       - "7005:7005" # Change to port of choice (both)
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - ./certs:/etc/nginx/certs:ro
     read_only: true
     tmpfs:

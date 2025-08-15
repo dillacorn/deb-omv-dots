@@ -1,0 +1,31 @@
+services:  
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    command:
+      - serve
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./var/cache/ntfy:/var/cache/ntfy
+      - ./etc/ntfy:/etc/ntfy
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - ntfy
+    ports:
+      - "1125:1125" # Change to port of choice (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
