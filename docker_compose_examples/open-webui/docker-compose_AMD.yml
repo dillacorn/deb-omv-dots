@@ -1,3 +1,5 @@
+# docker-compose.yml — For AMD GPUs
+
 services:
   ollama:
     image: ollama/ollama:rocm

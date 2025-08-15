@@ -1,3 +1,5 @@
+# docker-compose.yml — For Nvidia GPUs
+
 services:
   ollama:
     image: ollama/ollama:latest

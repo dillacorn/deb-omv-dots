@@ -1,3 +1,5 @@
+# docker-compose.yml — No GPUs Configuration
+
 services:
   ollama:
     image: ollama/ollama:latest
