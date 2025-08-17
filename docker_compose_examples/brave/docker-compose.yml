@@ -14,6 +14,7 @@ services:
       - PASSWORD= # provide Password
     volumes:
       - ./brave/config:/config
+#      - /srv/mergerfs/data/root/downloads:/downloads # example directory share
     shm_size: "1gb"
     restart: unless-stopped
 

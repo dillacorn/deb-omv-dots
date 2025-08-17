@@ -1,4 +1,3 @@
----
 services:
   calibre:
     image: lscr.io/linuxserver/calibre:latest
@@ -8,13 +7,31 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Atlanta/New_York
-      - CUSTOM_USER= #optional
-      - PASSWORD= #optional
+      - TZ=Etc/UTC
+      - CUSTOM_USER= # provide Username
+      - PASSWORD= # provide Password
       - CLI_ARGS= #optional
     volumes:
       - ./config:/config
+      - /docker/tailscale-certs:/config/tailscale-certs:ro
+#      - /srv/mergerfs/data/root/Books:/Books # example directory share
     ports:
-      - 8123:8181 # HTTPS for Calibre Manager
-      - 8124:8081 # For Calibre Reader Server (setup within Calibre app required)
+      - "8124:8081" # port for calibre reader
     restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-calibre
+    restart: unless-stopped
+    depends_on:
+      - calibre
+    ports:
+      - "8123:8123" # choose port (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
