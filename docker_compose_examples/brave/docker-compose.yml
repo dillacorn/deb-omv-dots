@@ -3,18 +3,33 @@ services:
     image: lscr.io/linuxserver/brave:latest
     container_name: brave
     dns:
-      - 100.100.100.100 # tailscale DNS address - for accessing other hosted web services
+      - 100.100.100.100 # tailscale dns
     security_opt:
-      - seccomp:unconfined #optional but recommended
+      - seccomp:unconfined #optional
     environment:
       - PUID=1000 # user id
       - PGID=1000 # group id
       - TZ=Etc/UTC
-      - CUSTOM_USER=   # Username
-      - PASSWORD=   # Password
+      - CUSTOM_USER= # provide Username
+      - PASSWORD= # provide Password
     volumes:
       - ./brave/config:/config
-    ports:
-      - 3051:3001 # https
     shm_size: "1gb"
     restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-brave
+    restart: unless-stopped
+    depends_on:
+      - brave
+    ports:
+      - "3051:3051" # choose port (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp

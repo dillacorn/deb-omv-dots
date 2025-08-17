@@ -1,4 +1,4 @@
-This is required if you want to use self-hosted services.
+This is required if you want to access self-hosted services.
 
 https://github.com/dillacorn/arch-hypr-dots/blob/main/browser_notes/redirector_extension_redirect_example.png
 
