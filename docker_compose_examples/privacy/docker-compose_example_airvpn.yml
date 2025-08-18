@@ -17,10 +17,9 @@ services:
     volumes:
       - ./gluetun:/gluetun
     ports:
-      - 9091:9091/tcp # transmission port
       - 51413:25045/tcp # airvpn port forwarded (for seeding) ~ must be configured in tranmission client as well.
       - 51413:25045/udp # airvpn port forwarded (for seeding)
-      - 6901:3001/tcp # mullvad-browser https port
+      - 6901:6901/tcp # nginx https
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --timeout=5 https://1.1.1.1 || exit 1"]
@@ -80,3 +79,16 @@ services:
       gluetun:
         condition: service_healthy
     network_mode: "service:gluetun" # Use gluetun's network
+
+---
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-privacy
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: "service:gluetun"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    restart: unless-stopped

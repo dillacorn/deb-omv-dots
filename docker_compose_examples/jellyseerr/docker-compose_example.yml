@@ -10,7 +10,7 @@ services:
     depends_on:
       - mariadb_jellyseerr
     environment:
-      - TZ=America/New_York
+      - TZ=Etc/UTC
       - DB_TYPE=mysql
       - DB_HOST=mariadb_jellyseerr
       - DB_NAME=jellyseerr
@@ -18,8 +18,6 @@ services:
       - DB_PASS=________    # input password
     volumes:
       - ./jellyseerr/config:/app/config
-    ports:
-      - 5055:5055
 
   mariadb_jellyseerr:
     image: mariadb:latest
@@ -33,3 +31,20 @@ services:
     volumes:
       - ./mariadb_data:/var/lib/mysql
     command: --innodb-buffer-pool-size=512M --max-connections=200
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-jellyseerr
+    restart: unless-stopped
+    depends_on:
+      - jellyseerr
+    ports:
+      - "5055:5055" # choose port (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp

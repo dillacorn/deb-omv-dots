@@ -5,12 +5,10 @@ services:
     command:
       - serve
     environment:
-      - TZ=America/New_York
+      - TZ=Etc/UTC
     volumes:
       - ./var/cache/ntfy:/var/cache/ntfy
       - ./etc/ntfy:/etc/ntfy
-    expose:
-      - "80"
     restart: unless-stopped
 
   nginx:
@@ -20,10 +18,10 @@ services:
     depends_on:
       - ntfy
     ports:
-      - "1125:1125" # Change to port of choice (both)
+      - "1125:1125" # choose port (both)
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
     read_only: true
     tmpfs:
       - /var/cache/nginx

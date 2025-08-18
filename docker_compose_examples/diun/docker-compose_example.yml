@@ -7,7 +7,7 @@ services:
       - "./data:/data"
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
-      - "TZ=America/New_York"  # Replace with your timezone
+      - "TZ=Etc/UTC"  # Replace with your timezone
       - "LOG_LEVEL=info"
       - "LOG_JSON=false"
       - "DIUN_WATCH_WORKERS=20"

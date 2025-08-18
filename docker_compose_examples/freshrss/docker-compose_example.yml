@@ -11,15 +11,13 @@ services:
     depends_on:
       - mariadb_freshrss
     environment:
-      TZ: America/New_York              # enter your timezone
+      TZ: Etc/UTC
       DB_TYPE: "mysql"
       DB_HOST: "mariadb_freshrss"
-      DB_USER: "________"               # enter username
-      DB_PASSWORD: "________"           # enter password
+      DB_USER: "______" # provide Username
+      DB_PASSWORD: "______" # provide Password
       DB_NAME: "freshrss"
-      CRON_MIN: "25,55"  # update twice an hour 25 min in and 55 min in.
-    ports:
-      - "5015:80"
+#      CRON_MIN: "25,55" # updates every 25th minute and the 55th minute of every hour
     volumes:
       - ./data:/var/www/FreshRSS/data
       - ./extensions:/var/www/FreshRSS/extensions
@@ -32,11 +30,27 @@ services:
     container_name: mariadb_freshrss
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "_______"    # enter password
+      MYSQL_ROOT_PASSWORD: "_______" # provide Password
       MYSQL_DATABASE: "freshrss"
-      MYSQL_USER: "________"            # enter username
-      MYSQL_PASSWORD: "_________"       # enter password
+      MYSQL_USER: "_______" # provide Username
+      MYSQL_PASSWORD: "_______" # provide Password
     volumes:
       - ./mariadb:/var/lib/mysql
     command: --innodb-buffer-pool-size=512M --max-connections=200
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-freshrss
+    restart: unless-stopped
+    depends_on:
+      - freshrss
+    ports:
+      - "5015:5015"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp

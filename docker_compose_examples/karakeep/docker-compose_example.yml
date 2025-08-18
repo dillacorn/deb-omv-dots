@@ -4,8 +4,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./data:/data
-    ports:
-      - 5010:3000                            # Change 5010 to desired port
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
@@ -32,6 +30,21 @@ services:
       MEILI_NO_ANALYTICS: "true"
     volumes:
       - meilisearch:/meili_data
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-karakeep
+    restart: unless-stopped
+    ports:
+      - "5010:5010" # choose port (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
 
 volumes:
   meilisearch:

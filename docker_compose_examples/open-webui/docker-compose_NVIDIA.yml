@@ -27,8 +27,6 @@ services:
       - ollama
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
-    expose:
-      - "8080"
     volumes:
       - ./open-webui:/app/backend/data
 
@@ -42,7 +40,7 @@ services:
       - "7005:7005" # Change to port of choice (both)
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
     read_only: true
     tmpfs:
       - /var/cache/nginx

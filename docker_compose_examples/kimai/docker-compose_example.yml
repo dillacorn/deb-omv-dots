@@ -24,10 +24,25 @@ services:
     volumes:
       - ./kimai/data:/opt/kimai/var/data
       - ./kimai/plugins:/opt/kimai/var/plugins
-    ports:
-      - 9800:8001
     environment:
       - ADMINMAIL= #insert email
       - ADMINPASS= #insert password
       - "DATABASE_URL=mysql://<your_username>:<your_password>@sqldb/<your_database_name>?charset=utf8mb4&serverVersion=8.3.0"
     restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-kimai
+    restart: unless-stopped
+    depends_on:
+      - kimai
+    ports:
+      - "9800:9800" # choose port (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp

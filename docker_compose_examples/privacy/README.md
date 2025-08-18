@@ -38,10 +38,10 @@ sudo docker compose up -d
 ## 🌍 4. Access Web Interfaces
 
 - 📦 **Transmission**  
-  Visit: `http://localhost:9091`
+  Visit: `https://localhost:6091/transmission/`
 
 - 🔐 **Mullvad Browser (via noVNC)**  
-  Visit: `https://localhost:6901`
+  Visit: `https://localhost:6901/browser/`
 
 > Replace `localhost` with your server's IP if accessing remotely.
 

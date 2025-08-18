@@ -44,8 +44,6 @@ services:
       - WEB_SEARCH_ENGINE=duckduckgo
       - WEB_LOADER_ENGINE=playwright
       - PLAYWRIGHT_WS_URL=ws://playwright:3000
-    expose:
-      - "8080"
     volumes:
       - ./open-webui:/app/backend/data
 
@@ -59,7 +57,7 @@ services:
       - "7005:7005" # Change to port of choice (both)
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
     read_only: true
     tmpfs:
       - /var/cache/nginx

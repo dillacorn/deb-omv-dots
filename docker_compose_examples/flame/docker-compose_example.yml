@@ -4,12 +4,9 @@ services:
     container_name: flame
     volumes:
       - ./flame/:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock # optional but required for Docker integration feature
-      
-    expose:
-      - "5005"
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - PASSWORD=_____________  # enter password
+      - PASSWORD= # provide Password
     restart: unless-stopped
 
   nginx:
@@ -19,10 +16,10 @@ services:
     depends_on:
       - flame
     ports:
-      - "5005:5005" # Change to port of choice (both)
+      - "5005:5005"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
     read_only: true
     tmpfs:
       - /var/cache/nginx
