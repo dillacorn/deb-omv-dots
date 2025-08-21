@@ -1,47 +1,35 @@
 # Guide: Installing a Custom Hugging Face Model into Ollama
 
-This guide explains how to run custom models from Hugging Face in [Ollama](https://ollama.ai).  
-Ollama does **not** run PyTorch safetensors directly — you need **GGUF** format.
+This guide explains how to run custom AI models from Hugging Face in Ollama.
 
 ---
 
-## 1. Requirements
+## File Format Problem
 
-- Running Ollama (native or in Docker)
-- Mounted volume for `/root/.ollama`
-- [Docker Compose](https://docs.docker.com/compose/) if using containers
+Most models on Hugging Face use "safetensors" (.safetensors files), but Ollama only works with "GGUF" (.gguf files). You need to find or convert your model to GGUF format.
 
 ---
 
-## 2. Ollama Model Requirements
+## Step 1: Find a GGUF Version
 
-Ollama can only run models in **GGUF** format.  
-Typical Hugging Face repos provide `.safetensors`, which are incompatible.
+Look for a repository with "-GGUF" in the name, or search for "[model name] GGUF" on Hugging Face.
 
-You must either:
-- Find a **GGUF mirror** of the model on Hugging Face, or  
-- Convert the model yourself.
+**Example:**
+- Original: `microsoft/DialoGPT-medium`
+- GGUF version: `mradermacher/DialoGPT-medium-GGUF`
 
----
-
-## 3. Finding a GGUF Repo
-
-Many popular models already have GGUF versions. For example:
+Look for files ending in `.gguf`:
 ```
-hf.co/mradermacher/Llama-3.2-3B-Instruct-GGUF
-```
-
-Check the files for quantized `.gguf` models:
-```
-Llama-3.2-3B-Instruct.Q4_K_S.gguf
-Llama-3.2-3B-Instruct.Q5_K_S.gguf
+model-name.Q4_K_S.gguf  (smaller, faster)
+model-name.Q5_K_S.gguf  (medium size/quality)
+model-name.Q8_0.gguf    (largest, best quality)
 ```
 
 ---
 
-## 4. Creating a Modelfile
+## Step 2: Create a Modelfile
 
-Ollama uses a **Modelfile** to define the model. Example:
+Create a text file called `Modelfile` with:
 
 ```dockerfile
 FROM hf.co/mradermacher/Llama-3.2-3B-Instruct-GGUF:Llama-3.2-3B-Instruct.Q5_K_S.gguf
@@ -54,131 +42,108 @@ TEMPLATE """{{ if .System }}<|system|>
 PARAMETER temperature 0.7
 ```
 
-- `FROM` must point to a `.gguf` file.
-- `TEMPLATE` defines prompt formatting (optional).
-- `PARAMETER` sets default runtime parameters (optional).
-
 ---
 
-## 5. Docker Volume Setup
-
-In `docker-compose.yml`, mount a directory for custom models:
+## Step 3: Docker Setup (if using Docker)
 
 ```yaml
 services:
   ollama:
-    image: ollama/ollama:rocm
+    image: ollama/ollama
     container_name: ollama
     restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
-      - ./ollama:/root/.ollama
-      - ./custom-model:/root/.ollama/models/custom-model
-    devices:
-      - /dev/kfd
-      - /dev/dri
+      - ./ollama-data:/root/.ollama
+      - ./my-model:/root/.ollama/models/my-model
 ```
 
-Now place your Modelfile at:
+Put your `Modelfile` in the `./my-model/` folder.
+
+---
+
+## Step 4: Install Your Model
+
+**Docker:**
 ```bash
-./custom-model/Modelfile
+docker exec -it ollama ollama create my-model -f /root/.ollama/models/my-model/Modelfile
+```
+
+**Native Ollama:**
+```bash
+ollama create my-model -f /path/to/your/Modelfile
 ```
 
 ---
 
-## 6. Build the Model
+## Step 5: Run Your Model
 
-Inside the running container, build the model:
-
+**Docker:**
 ```bash
-docker exec -it ollama ollama create custom-model -f /root/.ollama/models/custom-model/Modelfile
+docker exec -it ollama ollama run my-model
 ```
 
-Verify:
+**Native Ollama:**
 ```bash
-docker exec -it ollama ollama list
-docker exec -it ollama ollama show custom-model
-```
-
----
-
-## 7. Run the Model
-
-```bash
-docker exec -it ollama ollama run custom-model
+ollama run my-model
 ```
 
 ---
 
-## 8. Private or Gated Models
+## Converting to GGUF (if no GGUF version exists)
 
-- If the Hugging Face repo is **public**: no token is required.
-- If the repo is **private or gated**, set a token:
+1. **Install llama.cpp:**
+   ```bash
+   git clone https://github.com/ggerganov/llama.cpp
+   cd llama.cpp
+   make
+   ```
+
+2. **Download original model:**
+   ```bash
+   git lfs install
+   git clone https://huggingface.co/username/model-name
+   ```
+
+3. **Convert:**
+   ```bash
+   python convert-hf-to-gguf.py ./model-name --outfile model-name.gguf
+   ```
+
+4. **Update Modelfile:**
+   ```dockerfile
+   FROM ./model-name.gguf
+   ```
+
+---
+
+## Private/Gated Models
 
 ```bash
 export HUGGING_FACE_HUB_TOKEN=your_token_here
 ```
 
-Then rebuild the model.
+Then run your ollama create command.
 
 ---
 
-## 9. Converting Models to GGUF (if no GGUF exists)
+## Useful Commands
 
-If the Hugging Face repo has only `.safetensors`:
-
-1. **Clone the model:**
-   ```bash
-   git lfs install
-   git clone https://huggingface.co/<user>/<model>
-   ```
-
-2. **Convert with llama.cpp:**
-   ```bash
-   python convert-hf-to-gguf.py --model <path-to-model> --outfile mymodel.gguf
-   ```
-
-3. **Place `mymodel.gguf`** into your mounted volume or upload to your own Hugging Face repo.
-
-4. **Update your Modelfile:**
-   ```dockerfile
-   FROM ./mymodel.gguf
-   ```
-
-5. **Rebuild** with `ollama create`.
-
----
-
-## 10. Summary
-
-- Ollama only runs **GGUF** models.
-- Use **Modelfile** → `ollama create` → `ollama run`.
-- **Public** GGUF repos need no token.
-- **Private** repos require `HUGGING_FACE_HUB_TOKEN`.
-- If no GGUF exists, **convert it** with llama.cpp.
+```bash
+ollama list                    # List models
+ollama rm model-name          # Remove model
+ollama show model-name        # Model details
+```
 
 ---
 
 ## Troubleshooting
 
-### Common Issues:
-- **"Model not found"**: Ensure the GGUF file path in your Modelfile is correct
-- **"Permission denied"**: Check Docker volume mounts and file permissions
-- **"Out of memory"**: Try a smaller quantized model (Q4_K_S instead of Q5_K_S)
-- **"Invalid model format"**: Verify you're using a `.gguf` file, not `.safetensors`
+**"Model not found"** - Check GGUF file path in Modelfile
 
-### Useful Commands:
-```bash
-# List all models
-docker exec -it ollama ollama list
+**"Out of memory"** - Use smaller quantization (Q4_K_S instead of Q8_0)
 
-# Remove a model
-docker exec -it ollama ollama rm model_name
+**"Invalid model format"** - Make sure you're using .gguf, not .safetensors
 
-# Check model info
-docker exec -it ollama ollama show model_name
-
-# Pull official models
-docker exec -it ollama ollama pull llama2
-```
+**Weird responses** - Adjust TEMPLATE in Modelfile for your model's format
