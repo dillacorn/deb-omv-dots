@@ -18,7 +18,7 @@ model-name.Q8_0.gguf    (largest, best quality)
 Create a file called `Modelfile` (no extension) with:
 
 ```dockerfile
-FROM hf.co/mradermacher/XortronCriminalComputingConfig-GGUF:XortronCriminalComputingConfig.Q5_K_S.gguf
+FROM hf.co/mradermacher/Llama-3.2-3B-Instruct-GGUF:Llama-3.2-3B-Instruct.Q5_K_S.gguf
 
 TEMPLATE """{{ if .System }}<|system|>
 {{ .System }}{{ end }}{{ if .Prompt }}<|user|>
@@ -33,7 +33,7 @@ PARAMETER temperature 0.7
 ## Step 3: Create the Model
 
 ```bash
-docker exec -it ollama ollama create xortron -f /root/.ollama/models/xortron/Modelfile
+docker exec -it ollama ollama create custom-model -f /root/.ollama/models/custom-model/Modelfile
 ```
 
 ---
@@ -41,7 +41,7 @@ docker exec -it ollama ollama create xortron -f /root/.ollama/models/xortron/Mod
 ## Step 4: Run the Model
 
 ```bash
-docker exec -it ollama ollama run xortron
+docker exec -it ollama ollama run custom-model
 ```
 
 ---
