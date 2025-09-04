@@ -11,8 +11,8 @@ Generate the cert and key with fixed names (`cert.crt` / `cert.key`) in one step
 When using the certs with Docker (e.g., Nginx), you must mount the directory where they are stored as an **absolute path on your host**:
 
     volumes:
-      - /absolute/path/to/docker/tailscale-certs:/etc/nginx/certs:ro # absolute path – see [docs](www)
-[text](../rustdesk)
+      - /absolute/path/to/docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+
 ### Path Examples
 
 | OS      | Example Path                                    |
