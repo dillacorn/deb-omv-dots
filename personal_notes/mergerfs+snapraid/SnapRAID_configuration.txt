@@ -1,0 +1,36 @@
+# Settings
+Block size: 256
+Hash size: 16
+Auto save: 0
+Scrub percentage: 12
+**unchecked** No Hidden
+Default array: Array
+
+# Diff script settings
+**unchecked** Debug
+**checked** Send mail
+**checked** Run scrub
+**checked** Pre-hash
+Scrub frequency: 1
+Scrub percentage: 25
+Update threshold: 0
+Delete threshold: 0
+
+# Rules
+--
+## Exclusions
+/*.log
+/cache/
+/temp/
+*.sqlite3-wal
+*.sqlite-wal
+/.cache/
+*.cache
+/.config/
+.cache
+.config
+/*.db
+/gen.php
+*.db-wal
+jellyfin.db-wal
+gen.php

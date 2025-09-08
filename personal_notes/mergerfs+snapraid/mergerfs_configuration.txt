@@ -1,0 +1,23 @@
+Name: data
+
+Filesystems:
+**Ignore this**
+
+Shared folders:
+**Ignore this**
+
+Paths: (Exact)
+/srv/dev-disk-by-uuid-e1a36b59-3865-46b4-b81e-31b53c8c8c6d
+/srv/dev-disk-by-uuid-c1d7dd11-07de-4f65-8234-a3c8eff77b03
+
+Create policy:
+Existing path - most free space
+
+Minimum free space *
+4
+
+Unit:
+Gigabytes
+
+Options:
+defaults,cache.files=off
