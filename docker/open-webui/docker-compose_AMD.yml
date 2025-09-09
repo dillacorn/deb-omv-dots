@@ -22,7 +22,7 @@ services:
     container_name: playwright
     restart: unless-stopped
     shm_size: "1gb"
-    command: npx -y playwright@1.49.1 run-server --browser=chromium --host=0.0.0.0 --port=3000
+    command: npx -y playwright@1.49.1 run-server --host 0.0.0.0 --port 3000 --path /
     expose:
       - "3000"
 
