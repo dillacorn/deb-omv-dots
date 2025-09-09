@@ -1,4 +1,5 @@
-# docker-compose.yml — For AMD GPUs
+# docker-compose.yml
+# For AMD GPUs
 
 services:
   ollama:
@@ -9,12 +10,29 @@ services:
       - "11434:11434"
     environment:
       - OLLAMA_KEEP_ALIVE=24h
-      - HSA_OVERRIDE_GFX_VERSION=10.3.0
     volumes:
       - ./ollama:/root/.ollama
     devices:
       - /dev/kfd
       - /dev/dri
+
+  # Headless browser for OWUI web loader (Playwright WS server)
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.49.1-noble
+    container_name: playwright
+    restart: unless-stopped
+    shm_size: "1gb"
+    command: npx -y playwright@1.49.1 run-server --browser=chromium --host=0.0.0.0 --port=3000
+    expose:
+      - "3000"
+
+  # OCR for docs/images via Apache Tika (full image with Tesseract)
+  tika:
+    image: apache/tika:2.8.0.0-full
+    container_name: tika
+    restart: unless-stopped
+    expose:
+      - "9998"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:latest
@@ -22,8 +40,16 @@ services:
     restart: unless-stopped
     depends_on:
       - ollama
+      - playwright
+      - tika
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
+      - ENABLE_WEB_SEARCH=True
+      - WEB_SEARCH_ENGINE=duckduckgo
+      - WEB_LOADER_ENGINE=playwright
+      - PLAYWRIGHT_WS_URL=ws://playwright:3000
+      - CONTENT_EXTRACTION_ENGINE=tika
+      - TIKA_SERVER_URL=http://tika:9998
     volumes:
       - ./open-webui:/app/backend/data
 
@@ -38,6 +64,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
+    # - C:\Users\username\docker\tailscale-certs:/etc/nginx/certs:ro # absolute path
     read_only: true
     tmpfs:
       - /var/cache/nginx
