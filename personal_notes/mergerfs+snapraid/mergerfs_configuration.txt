@@ -9,6 +9,7 @@ Shared folders:
 Paths: (Exact)
 /srv/dev-disk-by-uuid-e1a36b59-3865-46b4-b81e-31b53c8c8c6d
 /srv/dev-disk-by-uuid-c1d7dd11-07de-4f65-8234-a3c8eff77b03
+/srv/dev-disk-by-uuid-5e737f30-73fd-423a-9228-e1a385075681
 
 Create policy:
 Existing path - most free space
