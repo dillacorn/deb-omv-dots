@@ -1,0 +1,51 @@
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    restart: unless-stopped
+    environment:
+      - SYNAPSE_SERVER_NAME=machine.magicdns-address.ts.net            # replace
+      - SYNAPSE_REPORT_STATS=yes
+    volumes:
+      - ./synapse/data:/data
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: synapse-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=dillacorn
+      - POSTGRES_PASSWORD=ChangeMe              # replace
+      - POSTGRES_DB=synapse
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --locale=C --lc-collate=C --lc-ctype=C
+      - LANG=C
+      - LC_ALL=C
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-matrix
+    restart: unless-stopped
+    depends_on:
+      - synapse
+    ports:
+      - "443:443"     # client-server API over HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro   # absolute path to certs
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
+
+  turn:
+    image: instrumentisto/coturn:latest
+    container_name: coturn
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
