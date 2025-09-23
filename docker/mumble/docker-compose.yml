@@ -1,0 +1,42 @@
+# /docker/mumble/docker-compose.yml
+name: mumble
+
+services:
+  mumble:
+    image: mumblevoip/mumble-server:latest   # official image
+    container_name: mumble
+    restart: unless-stopped
+    # Run the server as your host user so /data is writable without chmod 777
+    environment:
+      PUID: 1000                     # set to your user id (id -u)
+      PGID: 1000                     # set to your group id (id -g)
+      TZ: America/New_York
+
+      # Admin (SuperUser) password for first login
+      MUMBLE_SUPERUSER_PASSWORD: "ChangeMe_Once"
+
+      # Murmur (mumble-server) settings via env (mapped to murmur.ini)
+      # See murmur.ini reference; env names are case-insensitive.
+      MUMBLE_CONFIG_registerName: "Tailnet Mumble"
+      MUMBLE_CONFIG_welcometext: "<br />Welcome to Mumble"
+      MUMBLE_CONFIG_port: "64738"
+      # optional room/user limits
+      # MUMBLE_CONFIG_users: "100"
+
+      # TLS: use your Tailscale certs
+      MUMBLE_CONFIG_sslCert: "/certs/cert.crt"
+      MUMBLE_CONFIG_sslKey: "/certs/cert.key"
+
+      # Optional: set a server password required to join
+      # MUMBLE_CONFIG_serverpassword: "join-pass"
+
+      # Optional: more verbose logs
+      # MUMBLE_VERBOSE: "true"
+
+    ports:
+      - "64738:64738/tcp"            # voice TCP
+      - "64738:64738/udp"            # voice UDP
+
+    volumes:
+      - ./data:/data                          # database & generated config
+      - /docker/tailscale-certs:/certs:ro     # cert.crt + cert.key (read-only)
