@@ -1,0 +1,32 @@
+# /docker/mumble-web/docker-compose.yml
+
+name: mumble-web
+
+services:
+  mumble-web:
+    image: rankenstein/mumble-web:latest
+    container_name: mumble-web
+    restart: unless-stopped
+    environment:
+      MUMBLE_SERVER: "host.docker.internal:64738"
+      HTML_TITLE: "Mumble Web"
+      DEFAULT_USERNAME: "guest"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  nginx-mumbleweb:
+    image: nginx:alpine
+    container_name: nginx-mumbleweb
+    restart: unless-stopped
+    depends_on:
+      - mumble-web
+    ports:
+      - "4838:4838" # changed both to desired port
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
