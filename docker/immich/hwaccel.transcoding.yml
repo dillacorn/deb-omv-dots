@@ -1,0 +1,27 @@
+# /docker/immich/hwaccel.transcoding.yml
+
+services:
+  nvenc:
+    # Request NVIDIA GPU access
+    # Prefer this on modern Docker/Compose:
+    gpus: all
+
+    # If your Compose doesn't support `gpus:`, uncomment the deploy block below instead.
+    # Note: many Compose setups ignore `deploy.*` unless using Swarm, but some recent
+    # docker compose versions honor the device reservation.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+
+    # Map NVIDIA device nodes (keeps ffmpeg/NVENC happy on many hosts)
+    devices:
+      - /dev/nvidia0:/dev/nvidia0
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia-uvm:/dev/nvidia-uvm
+      - /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools
