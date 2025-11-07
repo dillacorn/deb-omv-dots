@@ -17,7 +17,6 @@ COMPOSE_DIRS=(
   "/docker/diun"
   "/docker/watchtower"
   "/docker/calibre"
-  "/docker/changedetection"
   "/docker/karakeep"
   "/docker/privacy"
   "/docker/vaultwarden"
