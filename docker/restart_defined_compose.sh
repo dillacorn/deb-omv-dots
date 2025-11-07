@@ -22,7 +22,7 @@ COMPOSE_DIRS=(
   "/docker/privacy"
   "/docker/vaultwarden"
   "/docker/mumble"
-  # "/docker/container/app_name"
+  # "/docker/app_name"
 )
 
 for dir in "${COMPOSE_DIRS[@]}"; do
