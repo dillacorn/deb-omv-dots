@@ -22,4 +22,6 @@ services:
       - WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD=redacted_password
       - WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG=docker-up
 
+      - DOCKER_API_VERSION=1.44
+
     restart: always
