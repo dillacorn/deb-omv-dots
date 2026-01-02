@@ -21,6 +21,7 @@ COMPOSE_DIRS=(
   "/docker/privacy"
   "/docker/vaultwarden"
   "/docker/mumble"
+  "/docker/homeassistant"
   # "/docker/app_name"
 )
 

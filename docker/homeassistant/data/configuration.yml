@@ -1,0 +1,23 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Your dockers local network address
+# Check with command:   docker network inspect homeassistant_default --format '{{json .IPAM.Config}}'
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.48.0/20
+
+# Your allowed addresses for connecting to homeassistant
+homeassistant:
+  external_url: "https://tailscale_magic_dns_example:8125"
+  internal_url: "http://192.168.68.2:8200"
