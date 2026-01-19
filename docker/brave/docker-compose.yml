@@ -2,8 +2,6 @@ services:
   brave:
     image: lscr.io/linuxserver/brave:latest
     container_name: brave
-    dns:
-      - 100.100.100.100 # tailscale dns
     security_opt:
       - seccomp:unconfined #optional
     environment:
