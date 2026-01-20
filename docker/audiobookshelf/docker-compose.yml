@@ -1,0 +1,30 @@
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./metadata:/metadata
+      - ./config:/config
+      - /srv/dev-disk-by-uuid-__________/AudioBooks:/audiobooks
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-audiobookshelf
+    restart: unless-stopped
+    depends_on:
+      - audiobookshelf
+    ports:
+      - "13378:13378" # Change to port of choice (both)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
