@@ -10,8 +10,8 @@ services:
       PIHOLE_UID: "1000"
       PIHOLE_GID: "1000"
     ports:
-      - "192.168.68.2:53:53/tcp"
-      - "192.168.68.2:53:53/udp"
+      - "192.168.68.2:53:53/tcp" # insert your servers local ip
+      - "192.168.68.2:53:53/udp" # insert your servers local ip
       - "8088:80/tcp"
     volumes:
       - ./etc-pihole:/etc/pihole
