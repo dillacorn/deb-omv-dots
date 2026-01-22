@@ -1,9 +1,9 @@
-# docker-compose.yml
-# For Nvidia GPUs
+# compose.yml
+# For AMD GPUs
 
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:rocm
     container_name: ollama
     restart: unless-stopped
     ports:
@@ -12,13 +12,9 @@ services:
       - OLLAMA_KEEP_ALIVE=24h
     volumes:
       - ./ollama:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    devices:
+      - /dev/kfd
+      - /dev/dri
 
   # Headless browser for OWUI web loader (Playwright WS server)
   playwright:

@@ -1,6 +1,4 @@
-# /docker/mumble/docker-compose.yml
-name: mumble
-
+# /docker/mumble/compose.yml
 services:
   mumble:
     image: mumblevoip/mumble-server:latest   # official image

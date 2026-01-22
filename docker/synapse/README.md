@@ -14,3 +14,11 @@ docker compose exec synapse register_new_matrix_user \
   --user username \
   --password 'password' \
   http://synapse:8008
+
+--
+
+## How to access
+Your tailscale magicDNS address
+
+example:
+https://MACHINE.MagicDNS-example.ts.net

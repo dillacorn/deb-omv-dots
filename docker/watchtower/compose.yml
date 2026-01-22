@@ -2,7 +2,7 @@ services:
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    command: --interval 21600 watchtower brave nginx-brave flame nginx-flame mumble-web nginx-mumbleweb freshrss nginx-freshrss ntfy nginx-ntfy hbbs hbbr vaultwarden nginx-vaultwarden nginx-immich jellyfin nginx-jellyfin jellyseerr nginx-jellyseerr gluetun transmission mullvad-browser nginx-privacy homeassistant audiobookshelf pihole
+    command: --interval 21600 watchtower brave nginx-brave flame nginx-flame mumble-web nginx-mumbleweb freshrss nginx-freshrss ntfy nginx-ntfy hbbs hbbr vaultwarden nginx-vaultwarden nginx-immich jellyfin nginx-jellyfin jellyseerr nginx-jellyseerr gluetun transmission mullvad-browser nginx-privacy homeassistant audiobookshelf pihole dockge
     # Whitelist: Actively update only these containers & Check every 6 hours
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

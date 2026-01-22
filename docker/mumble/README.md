@@ -2,7 +2,7 @@
 Your tailscale magicDNS address
 
 example:
-https://MACHINE.MagicDNS-example.ts.net:9800
+https://MACHINE.MagicDNS-example.ts.net:64738
 
 ## ⚙️ Configure `compose.yml` for Tailscale certs
 

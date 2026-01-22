@@ -12,11 +12,11 @@ Before starting, follow this visual guide to properly configure your AirVPN sett
 
 ---
 
-## ⚙️ 2. Configure `docker-compose.yml`
+## ⚙️ 2. Configure `compose.yml`
 
-Edit your `docker-compose.yml` file based on the AirVPN example (recommended for privacy):
+Edit your `compose.yml` file based on the AirVPN example (recommended for privacy):
 
-📄 [docker-compose_example_airvpn.yml](https://github.com/dillacorn/deb-omv-dots/blob/main/docker_compose_examples/privacy/docker-compose_example_airvpn.yml)
+📄 [compose_example_airvpn.yml](https://github.com/dillacorn/deb-omv-dots/blob/main/docker_compose_examples/privacy/compose_example_airvpn.yml)
 
 This service expects TLS certs to be mounted into the container. Use an **absolute path** on your host. Details and folder layout:  
 [deb-omv-dots/docker/tailscale-certs](https://github.com/dillacorn/deb-omv-dots/tree/main/docker/tailscale-certs)
@@ -47,6 +47,14 @@ sudo docker compose up -d
   Visit: `https://localhost:6901/browser/`
 
 > Replace `localhost` with your server's IP if accessing remotely.
+
+or with tailscale (just an example)
+
+- 📦 **Transmission**  
+  Visit: `https://MACHINE.MagicDNS-example.ts.net:6091/transmission/`
+
+- 🔐 **Mullvad Browser (via noVNC)**  
+  Visit: `https://MACHINE.MagicDNS-example.ts.net:6901/browser/`
 
 ---
 

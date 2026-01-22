@@ -1,7 +1,3 @@
-# /docker/mumble-web/docker-compose.yml
-
-name: mumble-web
-
 services:
   mumble-web:
     image: rankenstein/mumble-web:latest

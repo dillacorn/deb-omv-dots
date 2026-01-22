@@ -1,6 +1,10 @@
-## ⚙️ Configure `docker-compose.yml` for tailscale certs.
+## How to access
+Your tailscale magicDNS address
 
-Edit your `docker-compose.yml` file
+example:
+https://MACHINE.MagicDNS-example.ts.net:1930
 
-See the full setup guide and certificate folder here:  
+## ⚙️ Configure `compose.yml` for Tailscale certs
+
+This service expects TLS certs to be mounted into the container. Use an **absolute path** on your host. Details and folder layout:  
 [deb-omv-dots/docker/tailscale-certs](https://github.com/dillacorn/deb-omv-dots/tree/main/docker/tailscale-certs)

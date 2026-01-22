@@ -1,0 +1,31 @@
+services:
+  dockge:
+    image: louislam/dockge:1
+    container_name: dockge
+    environment:
+      TZ: America/New_York
+      DOCKGE_STACKS_DIR: /docker
+    ports:
+      - "8090:5001" # optional: plain HTTP access
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+      - /docker:/docker
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-dockge
+    depends_on:
+      - dockge
+    ports:
+      - "8091:8091" # HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp

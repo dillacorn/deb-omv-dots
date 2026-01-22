@@ -1,5 +1,5 @@
-# docker-compose.yml
-# No GPUs Configuration
+# compose.yml
+# For Nvidia GPUs
 
 services:
   ollama:
@@ -12,6 +12,13 @@ services:
       - OLLAMA_KEEP_ALIVE=24h
     volumes:
       - ./ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   # Headless browser for OWUI web loader (Playwright WS server)
   playwright:
