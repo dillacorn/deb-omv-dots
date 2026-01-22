@@ -1,0 +1,36 @@
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    environment:
+      TZ: America/New_York
+      FTLCONF_webserver_api_password: password # input a secure password
+      FTLCONF_dns_upstreams: "9.9.9.11;149.112.112.11" # quad9 DNS (I use NextDNS)
+      FTLCONF_dns_listeningMode: "all"
+      PIHOLE_UID: "1000"
+      PIHOLE_GID: "1000"
+    ports:
+      - "192.168.68.2:53:53/tcp"
+      - "192.168.68.2:53:53/udp"
+      - "8088:80/tcp"
+    volumes:
+      - ./etc-pihole:/etc/pihole
+      - ./etc-dnsmasq.d:/etc/dnsmasq.d
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-pihole
+    depends_on:
+      - pihole
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
