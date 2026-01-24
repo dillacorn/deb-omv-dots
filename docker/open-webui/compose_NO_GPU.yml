@@ -1,6 +1,9 @@
 # compose.yml
 # No GPUs Configuration
 
+# change file name to "compose.yml" in order to use
+# command: mv compose_NO_GPU.yml compose.yml
+
 services:
   ollama:
     image: ollama/ollama:latest

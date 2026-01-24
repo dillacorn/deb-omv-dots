@@ -1,3 +1,5 @@
+# change file name to "compose.yml" in order to use
+# command: mv compose_nvidia.yml compose.yml
 services:
   owncast:
     image: ich777/owncast:latest

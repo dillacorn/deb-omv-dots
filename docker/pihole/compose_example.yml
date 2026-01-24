@@ -1,21 +1,42 @@
+# change file name to "compose.yml" in order to use
+# command: mv compose_example.yml compose.yml
+
 services:
   pihole:
     image: pihole/pihole:latest
     container_name: pihole
     environment:
-      TZ: America/New_York
+      TZ: America/New_York # input your TZ
+
       FTLCONF_webserver_api_password: password # input a secure password
-      FTLCONF_dns_upstreams: "9.9.9.11;149.112.112.11" # quad9 DNS (I use NextDNS)
-      FTLCONF_dns_listeningMode: "all"
+      # Encrypted upstream via dnsproxy (DoH)
+      # Strict (encrypted only):
+      FTLCONF_dns_upstreams: 127.0.0.1#5053
+      # If you want fallback to plaintext when dnsproxy is down, use this instead:
+      # FTLCONF_dns_upstreams: 127.0.0.1#5053;9.9.9.11;149.112.112.11 # quad9 DNS (I use NextDNS)
+
+      FTLCONF_dns_listeningMode: all
       PIHOLE_UID: "1000"
       PIHOLE_GID: "1000"
     ports:
-      - "192.168.68.2:53:53/tcp" # insert your servers local ip
-      - "192.168.68.2:53:53/udp" # insert your servers local ip
-      - "8088:80/tcp"
+      - 192.168.68.2:53:53/tcp
+      - 192.168.68.2:53:53/udp
+      - 8088:80/tcp
     volumes:
       - ./etc-pihole:/etc/pihole
       - ./etc-dnsmasq.d:/etc/dnsmasq.d
+    restart: unless-stopped
+
+  dnsproxy:
+    image: adguard/dnsproxy:latest
+    container_name: dnsproxy-nextdns
+    network_mode: service:pihole
+    command:
+      - --listen=127.0.0.1
+      - --port=5053
+      - --upstream=https://dns.nextdns.io/xxxxxx # input your DNS-over-HTTPS server
+      - --bootstrap=1.1.1.1:53
+      - --bootstrap=9.9.9.9:53
     restart: unless-stopped
 
   nginx:
@@ -24,7 +45,7 @@ services:
     depends_on:
       - pihole
     ports:
-      - "8089:8089"
+      - 8089:8089
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - /docker/tailscale-certs:/etc/nginx/certs:ro
@@ -34,3 +55,5 @@ services:
       - /var/cache/nginx
       - /var/run
       - /var/tmp
+
+networks: {}

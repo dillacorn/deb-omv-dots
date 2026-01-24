@@ -1,3 +1,6 @@
+# change file name to "compose.yml" in order to use
+# command: mv compose_example_nvidia.yml compose.yml
+
 #
 # WARNING: Make sure to use the docker-compose.yml of the current release:
 #

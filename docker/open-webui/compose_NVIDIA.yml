@@ -1,6 +1,9 @@
 # compose.yml
 # For Nvidia GPUs
 
+# change file name to "compose.yml" in order to use
+# command: mv compose_NVIDIA.yml compose.yml
+
 services:
   ollama:
     image: ollama/ollama:latest

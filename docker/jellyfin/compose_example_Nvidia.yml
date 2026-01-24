@@ -1,3 +1,6 @@
+# change file name to "compose.yml" in order to use
+# command: mv compose_example_Nvidia.yml compose.yml
+
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest

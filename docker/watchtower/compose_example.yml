@@ -1,3 +1,6 @@
+# change file name to "compose.yml" in order to use
+# command: mv compose_example.yml compose.yml
+
 services:
   watchtower:
     image: containrrr/watchtower

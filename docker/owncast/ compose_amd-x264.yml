@@ -1,3 +1,5 @@
+# change file name to "compose.yml" in order to use
+# command: mv compose_amd-x264.yml compose.yml
 services:
   owncast:
     image: owncast/owncast:latest
