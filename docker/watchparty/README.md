@@ -1,0 +1,18 @@
+# Quick Start - This application needs to built manually
+
+## git clone repo command:
+git clone https://github.com/howardchung/watchparty.git
+
+## build application and launch command:
+command: docker compose up -d --build
+
+## How to access
+Your tailscale magicDNS address
+
+example:
+https://MACHINE.MagicDNS-example.ts.net:8443
+
+## ⚙️ Configure `compose.yml` for Tailscale certs
+
+This service expects TLS certs to be mounted into the container. Use an **absolute path** on your host. Details and folder layout:  
+[deb-omv-dots/docker/tailscale-certs](https://github.com/dillacorn/deb-omv-dots/tree/main/docker/tailscale-certs)

@@ -1,0 +1,47 @@
+# Quick Start - This application needs to built manually
+
+# git clone repo:
+# command: git clone https://github.com/howardchung/watchparty.git
+
+# build application and launch:
+# command: docker compose up -d --build
+
+services:
+  watchparty:
+    build:
+      context: ./watchparty
+      dockerfile: Dockerfile
+    image: watchparty:local
+    container_name: watchparty
+    environment:
+      - TZ=America/New_York
+      - PORT=8080
+    expose:
+      - "8080"
+    restart: unless-stopped
+    networks:
+      - watchparty_net
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-watchparty
+    restart: unless-stopped
+    depends_on:
+      - watchparty
+    ports:
+      - "8080:8080/tcp"
+      - "8443:8443/tcp"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
+    networks:
+      - watchparty_net
+
+networks:
+  watchparty_net:
+    name: watchparty_net
