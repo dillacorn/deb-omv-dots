@@ -1,0 +1,30 @@
+# Sorting type
+Custom order
+
+# Apps
+
+## Pin new applications by default
+True
+
+## Open applications in the same tab
+False
+
+# Bookmarks
+True
+
+## Pin new categories by default
+True
+
+## Open bookmarks in the same tab
+False
+
+# Search
+
+## Primary search provider
+Local search
+
+## Secondary search provider
+DuckDuckGo
+
+## Open search results in the same tab
+False

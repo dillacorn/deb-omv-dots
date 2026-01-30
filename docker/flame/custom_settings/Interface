@@ -1,0 +1,43 @@
+# Miscellaneous
+## Custom page title
+dillacorn's flame
+
+# Search
+## Hide search bar
+False
+
+## Disable search bar autofocus
+False
+
+# Header
+## Hide headline (greetings and weather)
+False
+
+## Hide date
+False
+
+## Hide time
+False
+
+## Date formatting
+Friday, October 22 2021
+
+## Custom greetings
+Start;Continue;Relax;Unwind
+
+## Custom weekday names
+Sun;Mon;Tue;Wed;Thu;Fri;Sat
+
+## Custom month names
+Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec
+
+# Sections
+
+## Hide applications
+False
+
+## Hide bookmarks
+False
+
+## Hide empty categories
+True
