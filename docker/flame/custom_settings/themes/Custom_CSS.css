@@ -147,22 +147,30 @@ body::after {
   border: none !important;
   text-decoration: none !important;
   white-space: nowrap !important;
+
   line-height: 0.92 !important;
   font-size: 3.15rem !important;
 }
 
+/* caret: draw it with CSS (not the ▌ glyph) so it aligns perfectly */
 @keyframes blink { 0%,100%{opacity:0.75} 50%{opacity:0.15} }
 .Header_Header__GCJdR h1::after {
-  content: "▌";
-  display: inline-block;
-  width: 0.55ch;
-  margin-left: 0.20ch;
-  font-size: 0.58em;
-  line-height: 1;
-  vertical-align: -0.06em;
-  animation: blink 1.2s infinite;
-  color: color-mix(in srgb, var(--p) 55%, transparent);
-  font-weight: 400;
+  content: "" !important;
+  display: inline-block !important;
+
+  /* height tracks the text reliably */
+  height: 0.86em !important;
+
+  /* thickness and color */
+  border-left: 0.12em solid color-mix(in srgb, var(--p) 55%, transparent) !important;
+
+  /* spacing from the last letter */
+  margin-left: 0.20ch !important;
+
+  /* align the caret to the cap-height of the font */
+  vertical-align: -0.08em !important;
+
+  animation: blink 1.2s infinite !important;
 }
 
 /* weather */
