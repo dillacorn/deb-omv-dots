@@ -7,6 +7,9 @@ https://github.com/auanasgheps/snapraid-aio-script/tree/master
 APC UPS configuration
 https://youtu.be/MyXrlRUBqyg
 
+## License
+This project is licensed under the [MIT License](https://github.com/dillacorn/deb-omv-dots/blob/main/LICENSE)
+
 ## ☕ Donate
 
 Built and maintained out of passion. Always FOSS. Donations appreciated.  
