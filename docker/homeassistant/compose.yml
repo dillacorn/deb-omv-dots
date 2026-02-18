@@ -3,8 +3,6 @@ services:
     image: lscr.io/linuxserver/homeassistant:latest
     container_name: homeassistant
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=America/New_York
     volumes:
       - ./data:/config
