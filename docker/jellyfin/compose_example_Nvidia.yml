@@ -5,11 +5,13 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    gpus: all
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC                    # enter your timezone
       - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
     volumes:
       - ./config:/config
       - /srv/dev-disk-by-uuid-__________/Videos:/data/Videos
@@ -18,13 +20,6 @@ services:
       - /srv/dev-disk-by-uuid-__________/Movies:/data/Movies
       - /srv/dev-disk-by-uuid-__________/Photos:/data/Pictures
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-          - driver: nvidia
-            count: 1
-            capabilities: [gpu]
 
   nginx:
     image: nginx:alpine

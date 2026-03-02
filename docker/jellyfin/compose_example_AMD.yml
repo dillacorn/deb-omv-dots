@@ -5,6 +5,7 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    gpus: all
     environment:
       - PUID=1000
       - PGID=1000
