@@ -19,7 +19,7 @@ scene: !include scenes.yaml
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 172.30.0.3
+    - 172.30.0.0/16
     - 127.0.0.1
 
 # Your allowed addresses for connecting to homeassistant
