@@ -61,7 +61,7 @@ services:
     environment:
       - PUID=1000 # user id
       - PGID=1000 # group id
-      - TZ=Etc/UTC # timezeon
+      - TZ=Etc/UTC # timezone
       - CUSTOM_USER=______   # insert password (optional but recommended)
       - PASSWORD=______   # insert password (optional but recommended)
     volumes:
