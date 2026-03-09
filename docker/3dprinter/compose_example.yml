@@ -1,0 +1,69 @@
+services:
+  klipper:
+    image: mkuf/klipper:latest
+    container_name: klipper
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /dev:/dev
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/run:/opt/printer_data/run
+      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - ./printer_data/logs:/opt/printer_data/logs
+
+  moonraker:
+    image: mkuf/moonraker:latest
+    container_name: moonraker
+    restart: unless-stopped
+    depends_on:
+      - klipper
+    expose:
+      - "7125"
+    volumes:
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/run:/opt/printer_data/run
+      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - ./printer_data/logs:/opt/printer_data/logs
+      - ./moonraker_klipper_config_examples:/opt/klipper/config:ro
+      - ./moonraker_klipper_docs:/opt/klipper/docs:ro
+
+  fluidd:
+    image: ghcr.io/fluidd-core/fluidd:latest
+    container_name: fluidd
+    restart: unless-stopped
+
+  ustreamer:
+    image: mkuf/ustreamer:latest
+    container_name: ustreamer
+    restart: unless-stopped
+    devices:
+      - /dev/video0:/dev/video0
+    expose:
+      - "8080"
+    command:
+      - --device=/dev/video0
+      - --host=0.0.0.0
+      - --port=8080
+      - --resolution=1280x720
+      - --desired-fps=15
+      - --format=MJPEG
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-fluidd
+    restart: unless-stopped
+    depends_on:
+      - fluidd
+      - moonraker
+      - ustreamer
+    ports:
+      - "5006:5006"
+      - "7125:7125"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /docker/tailscale-certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /var/tmp
