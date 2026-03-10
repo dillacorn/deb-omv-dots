@@ -8,7 +8,7 @@ services:
       - /dev:/dev
       - ./printer_data/config:/opt/printer_data/config
       - ./printer_data/run:/opt/printer_data/run
-      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - /srv/mergerfs/data/root/gcodes:/opt/printer_data/gcodes
       - ./printer_data/logs:/opt/printer_data/logs
 
   moonraker:
@@ -22,7 +22,7 @@ services:
     volumes:
       - ./printer_data/config:/opt/printer_data/config
       - ./printer_data/run:/opt/printer_data/run
-      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - /srv/mergerfs/data/root/gcodes:/opt/printer_data/gcodes
       - ./printer_data/logs:/opt/printer_data/logs
       - ./moonraker_klipper_config_examples:/opt/klipper/config:ro
       - ./moonraker_klipper_docs:/opt/klipper/docs:ro
