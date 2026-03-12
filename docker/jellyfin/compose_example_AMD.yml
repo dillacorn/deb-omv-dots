@@ -1,46 +1,81 @@
-# change file name to "compose.yml" in order to use
-# command: mv compose_example_AMD.yml compose.yml
+# /docker/jellyfin/compose.yml
+
+configs:
+  ts-serve:
+    content: |
+      {
+        "TCP": {
+          "443": {
+            "HTTPS": true
+          }
+        },
+        "Web": {
+          "$${TS_CERT_DOMAIN}:443": {
+            "Handlers": {
+              "/": {
+                "Proxy": "http://127.0.0.1:${SERVICEPORT}"
+              }
+            }
+          }
+        },
+        "AllowFunnel": {
+          "$${TS_CERT_DOMAIN}:443": false
+        }
+      }
 
 services:
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    container_name: jellyfin
-    gpus: all
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale-${SERVICE}
+    hostname: ${SERVICE}
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC                      # enter your timezone
-      - NVIDIA_VISIBLE_DEVICES=all
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_SERVE_CONFIG=/config/serve.json
+      - TS_USERSPACE=false
+      - TS_ENABLE_HEALTH_CHECK=true
+      - TS_LOCAL_ADDR_PORT=127.0.0.1:41234
+      - TS_AUTH_ONCE=true
+    configs:
+      - source: ts-serve
+        target: /config/serve.json
     volumes:
       - ./config:/config
-      - /srv/dev-disk-by-uuid-__________/Videos:/data/Videos
-      - /srv/dev-disk-by-uuid-__________/Shows:/data/Shows
-      - /srv/dev-disk-by-uuid-__________/Music:/data/Music
-      - /srv/dev-disk-by-uuid-__________/Movies:/data/Movies
-      - /srv/dev-disk-by-uuid-__________/Photos:/data/Pictures
+      - ./ts/state:/var/lib/tailscale
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:41234/healthz"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
+
+  jellyfin:
+    image: ${IMAGE_URL}
+    container_name: ${SERVICE}
+    network_mode: "service:tailscale"
+    gpus: all
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+      - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES}
+    volumes:
+      - ${VIDEOS_PATH}:/data/Videos
+      - ${SHOWS_PATH}:/data/Shows
+      - ${CONFIG_PATH}:/config
+      - ${MUSIC_PATH}:/data/Music
+      - ${MOVIES_PATH}:/data/Movies
+      - ${PICTURES_PATH}:/data/Pictures
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128  # enter gpu
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx-jellyfin
-    restart: unless-stopped
     depends_on:
-      - jellyfin
-    ports:
-      - "8096:8096" # choose port (both)
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - /docker/tailscale-certs:/etc/nginx/certs:ro # absolute path
-    read_only: true
-    tmpfs:
-      - /var/cache/nginx
-      - /var/run
-      - /var/tmp
-
-# gpu documentation: https://jellyfin.org/docs/general/administration/hardware-acceleration/amd/#configure-with-linux-virtualization
-
-# obtain gpu device name = individual commands below
-# getent group render | cut -d: -f3
-# getent group video | cut -d: -f3
+      tailscale:
+        condition: service_healthy
+    restart: unless-stopped

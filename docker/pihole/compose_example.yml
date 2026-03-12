@@ -1,26 +1,24 @@
-# change file name to "compose.yml" in order to use
-# command: mv compose_example.yml compose.yml
-
 services:
   pihole:
     image: pihole/pihole:latest
     container_name: pihole
     environment:
-      TZ: America/New_York # input your TZ
-
-      FTLCONF_webserver_api_password: password # input a secure password
-      # Encrypted upstream via dnsproxy (DoH)
-      # Strict (encrypted only):
+      TZ: America/New_York
+      FTLCONF_webserver_api_password: 0LNugsUUeD7J2Wbh1p
       FTLCONF_dns_upstreams: 127.0.0.1#5053
-      # If you want fallback to plaintext when dnsproxy is down, use this instead:
-      # FTLCONF_dns_upstreams: 127.0.0.1#5053;9.9.9.11;149.112.112.11 # quad9 DNS (I use NextDNS)
-
       FTLCONF_dns_listeningMode: all
+      FTLCONF_dns_hosts: |-
+        192.168.68.2 omv.time-puffin.ts.net
+        192.168.68.2 flame.time-puffin.ts.net
+        192.168.68.2 jellyfin.time-puffin.ts.net
+        192.168.68.2 jellyseerr.time-puffin.ts.net
+        192.168.68.2 brave.time-puffin.ts.net
+        192.168.68.2 audiobookshelf.time-puffin.ts.net
       PIHOLE_UID: "1000"
       PIHOLE_GID: "1000"
     ports:
-      - 192.168.68.2:53:53/tcp # change local static IP here which the router will point to for DNS. Leave ":53:53/tcp" alone.
-      - 192.168.68.2:53:53/udp # change local static IP here which the router will point to for DNS. Leave ":53:53/udp" alone.
+      - 192.168.68.2:53:53/tcp
+      - 192.168.68.2:53:53/udp
       - 8088:80/tcp
     volumes:
       - ./etc-pihole:/etc/pihole
@@ -30,13 +28,13 @@ services:
   dnsproxy:
     image: adguard/dnsproxy:latest
     container_name: dnsproxy-nextdns
-    network_mode: service:pihole
+    network_mode: "service:pihole"
     command:
-      - --listen=127.0.0.1
-      - --port=5053
-      - --upstream=https://dns.nextdns.io/xxxxxx # input your DNS-over-HTTPS server
-      - --bootstrap=1.1.1.1:53
-      - --bootstrap=9.9.9.9:53
+      - "--listen=127.0.0.1"
+      - "--port=5053"
+      - "--upstream=https://dns.nextdns.io/82d3a9"
+      - "--bootstrap=1.1.1.1:53"
+      - "--bootstrap=9.9.9.9:53"
     restart: unless-stopped
 
   nginx:
@@ -46,9 +44,15 @@ services:
       - pihole
     ports:
       - 8089:8089
+      - 443:443
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - /docker/tailscale-certs:/etc/nginx/certs:ro
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - /docker/tailscale-certs:/etc/nginx/omv-certs:ro
+      - /docker/flame/ts/state/certs:/etc/nginx/flame-certs:ro
+      - /docker/jellyfin/ts/state/certs:/etc/nginx/jellyfin-certs:ro
+      - /docker/jellyseerr/ts/state/certs:/etc/nginx/jellyseerr-certs:ro
+      - /docker/brave/ts/state/certs:/etc/nginx/brave-certs:ro
+      - /docker/audiobookshelf/ts/state/certs:/etc/nginx/audiobookshelf-certs:ro
     restart: unless-stopped
     read_only: true
     tmpfs:
