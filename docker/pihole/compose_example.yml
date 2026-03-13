@@ -4,7 +4,7 @@ services:
     container_name: pihole
     environment:
       TZ: America/New_York
-      FTLCONF_webserver_api_password: your_password
+      FTLCONF_webserver_api_password: 'REPLACE_WITH_YOUR_PASSWORD'
       FTLCONF_dns_upstreams: 127.0.0.1#5053
       FTLCONF_dns_listeningMode: all
       FTLCONF_dns_hosts: |-
