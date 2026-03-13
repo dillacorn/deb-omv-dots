@@ -4,7 +4,7 @@ services:
     container_name: pihole
     environment:
       TZ: America/New_York
-      FTLCONF_webserver_api_password: 0LNugsUUeD7J2Wbh1p
+      FTLCONF_webserver_api_password: your_password
       FTLCONF_dns_upstreams: 127.0.0.1#5053
       FTLCONF_dns_listeningMode: all
       FTLCONF_dns_hosts: |-
@@ -32,7 +32,6 @@ services:
     command:
       - "--listen=127.0.0.1"
       - "--port=5053"
-      - "--upstream=https://dns.nextdns.io/82d3a9"
       - "--bootstrap=1.1.1.1:53"
       - "--bootstrap=9.9.9.9:53"
     restart: unless-stopped
