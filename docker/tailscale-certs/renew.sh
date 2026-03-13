@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
 # /docker/tailscale-certs/renew.sh
 #
-# Renews exported Tailscale cert files only when missing or close to expiry.
-# Handles:
-#   1) the current host machine cert in /docker/tailscale-certs
-#   2) optional sidecar services like jellyfin and flame
+# Purpose:
+#   Renew exported Tailscale cert files only when missing or close to expiry.
 #
-# Run with:
+# Handles:
+#   1) Host machine cert in /docker/tailscale-certs
+#   2) Optional sidecar services like jellyfin and flame
+#
+# Dry run:
+#   bash /docker/tailscale-certs/renew.sh --dry-run
+#
+# Normal run:
 #   bash /docker/tailscale-certs/renew.sh
+#
+# Notes:
+#   - This script renews FILE-BASED certs created by `tailscale cert`.
+#   - It does NOT control Tailscale Serve's built-in HTTPS behavior.
+#   - Dry run verifies config, containers, paths, detected domains, current
+#     cert expiry, and whether renewal WOULD happen, without changing anything.
+#   - Edit only the USER SETTINGS section unless you know what you are doing.
 
 set -euo pipefail
 
@@ -28,30 +40,48 @@ RENEW_BEFORE_DAYS=35
 RESTART_NGINX=1
 
 # Optional sidecar services to renew.
-# Add more names here:
-# EXTRA_SERVICES=("jellyfin" "flame" "jellyseerr" "brave")
-EXTRA_SERVICES=("jellyfin" "flame")
+# Add more names here as needed.
+EXTRA_SERVICES=("jellyfin" "flame" "jellyseerr" "audiobookshelf" "brave")
 
-# Optional per-service overrides.
-# If omitted, defaults are:
-#   container name: tailscale-<service>
-#   cert dir:       /docker/<service>/ts/state/certs
+# Optional per-service container overrides.
+# Default if omitted: tailscale-<service>
 declare -A SERVICE_CONTAINER=(
   [jellyfin]="tailscale-jellyfin"
   [flame]="tailscale-flame"
+  [jellyseerr]="tailscale-jellyseerr"
+  [audiobookshelf]="tailscale-audiobookshelf"
+  [brave]="tailscale-brave"
 )
 
+# Optional per-service cert directory overrides.
+# Default if omitted: /docker/<service>/ts/state/certs
 declare -A SERVICE_CERT_DIR=(
   [jellyfin]="/docker/jellyfin/ts/state/certs"
   [flame]="/docker/flame/ts/state/certs"
+  [jellyseerr]="/docker/jellyseerr/ts/state/certs"
+  [audiobookshelf]="/docker/audiobookshelf/ts/state/certs"
+  [brave]="/docker/brave/ts/state/certs"
 )
 
 ###############################################################################
-# SCRIPT
+# INTERNALS
 ###############################################################################
 
+SCRIPT_NAME="$(basename "$0")"
 RENEW_BEFORE_SECONDS=$(( RENEW_BEFORE_DAYS * 24 * 60 * 60 ))
 ANY_RENEWED=0
+DRY_RUN=0
+
+usage() {
+  cat <<'EOF'
+Usage:
+  bash /docker/tailscale-certs/renew.sh [--dry-run] [--help]
+
+Options:
+  --dry-run   Validate config and show what would be renewed without changing anything
+  --help      Show this help
+EOF
+}
 
 log() {
   printf '[%s] %s\n' "$(date '+%F %T')" "$*"
@@ -107,10 +137,19 @@ renew_host_cert() {
   cert_file="${HOST_CERT_DIR}/${HOST_CERT_FILE}"
   key_file="${HOST_CERT_DIR}/${HOST_KEY_FILE}"
 
+  log "Host machine FQDN: ${fqdn}"
   show_cert_expiry "Host cert (${fqdn}) current expiry" "${cert_file}"
 
   if cert_valid_enough "${cert_file}"; then
     log "Host cert is still valid for more than ${RENEW_BEFORE_DAYS} day(s). Skipping."
+    return 0
+  fi
+
+  if [ "${DRY_RUN}" -eq 1 ]; then
+    log "[dry-run] Would renew host cert for ${fqdn}"
+    log "[dry-run] Would write:"
+    log "[dry-run]   ${cert_file}"
+    log "[dry-run]   ${key_file}"
     return 0
   fi
 
@@ -154,10 +193,20 @@ renew_service_cert() {
   cert_file="${cert_dir}/${fqdn}.crt"
   key_file="${cert_dir}/${fqdn}.key"
 
+  log "Service ${service} container: ${container}"
+  log "Service ${service} FQDN: ${fqdn}"
   show_cert_expiry "Service cert (${fqdn}) current expiry" "${cert_file}"
 
   if cert_valid_enough "${cert_file}"; then
     log "Service cert for ${service} is still valid for more than ${RENEW_BEFORE_DAYS} day(s). Skipping."
+    return 0
+  fi
+
+  if [ "${DRY_RUN}" -eq 1 ]; then
+    log "[dry-run] Would renew service cert for ${fqdn} via ${container}"
+    log "[dry-run] Would write:"
+    log "[dry-run]   ${cert_file}"
+    log "[dry-run]   ${key_file}"
     return 0
   fi
 
@@ -179,6 +228,12 @@ renew_service_cert() {
 
 restart_nginx_if_needed() {
   if [ "${RESTART_NGINX}" -ne 1 ]; then
+    log "Nginx restart disabled."
+    return 0
+  fi
+
+  if [ "${DRY_RUN}" -eq 1 ]; then
+    log "[dry-run] Would restart running containers matching name=nginx if any certs required renewal."
     return 0
   fi
 
@@ -199,18 +254,57 @@ restart_nginx_if_needed() {
   echo "${ids}" | xargs -r docker restart >/dev/null
 }
 
+show_notes() {
+  log "Script: ${SCRIPT_NAME}"
+  log "Renew threshold: ${RENEW_BEFORE_DAYS} day(s)"
+  log "Host cert dir: ${HOST_CERT_DIR}"
+  log "Extra services: ${EXTRA_SERVICES[*]:-none}"
+  if [ "${DRY_RUN}" -eq 1 ]; then
+    log "Mode: dry-run"
+  else
+    log "Mode: live"
+  fi
+}
+
+parse_args() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --dry-run)
+        DRY_RUN=1
+        ;;
+      --help|-h)
+        usage
+        exit 0
+        ;;
+      *)
+        die "Unknown argument: $1"
+        ;;
+    esac
+    shift
+  done
+}
+
 main() {
+  parse_args "$@"
+
   require_cmd docker
   require_cmd openssl
 
+  show_notes
   renew_host_cert
 
+  local service
   for service in "${EXTRA_SERVICES[@]}"; do
     renew_service_cert "${service}"
   done
 
   restart_nginx_if_needed
-  log "Done."
+
+  if [ "${DRY_RUN}" -eq 1 ]; then
+    log "Dry run complete. No changes were made."
+  else
+    log "Done."
+  fi
 }
 
 main "$@"
